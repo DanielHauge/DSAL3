@@ -2,7 +2,7 @@ package main
 
 import "fmt"
 
-func CreateVertex(edges []*vertex, cost int, name string, gain int, early int, late int) *vertex{
+func CreateVertex(edges []*vertex, cost int, name string, gain int, early int, late int, drag int) *vertex{
 	result := new(vertex)
 	result.edges = edges
 	result.cost = cost
@@ -10,13 +10,10 @@ func CreateVertex(edges []*vertex, cost int, name string, gain int, early int, l
 	result.gain = gain
 	result.early = early
 	result.late = late
+	result.drag = drag
 	return result
 
 }
-
-
-
-
 
 // Adjacency linked list
 type vertex struct {
@@ -26,6 +23,7 @@ type vertex struct {
 	gain int
 	early int
 	late int
+	drag int
 }
 
 
@@ -42,4 +40,6 @@ func (v vertex) PrintMe(){
 	fmt.Print(v.late-v.cost)
 	fmt.Print(" - ")
 	fmt.Print(v.late-1)
+	fmt.Print("\n Drag!   ")
+	fmt.Print(v.drag)
 }
