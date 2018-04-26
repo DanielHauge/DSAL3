@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"strconv"
 )
 
 func Calculatefloats(v []*vertex){
@@ -10,10 +11,10 @@ func Calculatefloats(v []*vertex){
 	}
 }
 
-func CalculateCritPath(v *vertex)[]vertex{
-	results := []vertex{}
+func CalculateCritPath(v *vertex)[]*vertex{
+	results := []*vertex{}
 	if len(v.edges)==0{
-		fmt.Print(v.name+" END!")
+		fmt.Print(v.name+" END!\n")
 	} else {
 		int := 0
 		for i,x := range v.edges{
@@ -21,11 +22,12 @@ func CalculateCritPath(v *vertex)[]vertex{
 				fmt.Print(v.name)
 				fmt.Print(" - ")
 				int = i
-				results = append(results, *v)
+				results = append(results, v)
 			}
 		}
 		CalculateCritPath(v.edges[int])
 	}
+	fmt.Println(strconv.Itoa(len(results)) + " Length")
 	return results
 }
 
@@ -37,9 +39,6 @@ func CalculateEarliest(vertex *vertex, earliest int){
 	for _, x := range vertex.edges{
 		CalculateEarliest(x, vertex.early+vertex.cost)
 	}
-
-
-
 }
 
 func CalculateLatest(vertex *vertex){
@@ -47,8 +46,6 @@ func CalculateLatest(vertex *vertex){
 		CalculateLatest(x)
 	}
 	vertex.late = vertex.GetLatestForSingleVertex()
-
-
 }
 
 func (v *vertex) GetLatestForSingleVertex()int{
@@ -67,29 +64,33 @@ func (v *vertex) GetLatestForSingleVertex()int{
 func CalculateDrag(v []*vertex){
 	for _, x := range v{
 		originalcost := x.cost
-		drag := 1
-		for x.IsStillCritPath(x.cost, v){
+		drag := 0
+		fmt.Println("trying to find drag for: "+x.name+" Where its cost is: "+strconv.Itoa(originalcost))
+		for x.IsStillCritPath(originalcost-drag, v){
+			fmt.Println("Was still critical path: " + strconv.Itoa(drag))
 			drag ++;
+			if drag == originalcost {
+				break;
+			}
 		}
+		fmt.Println("Found Drag for "+x.name+" - Was: "+strconv.Itoa(drag))
 		x.drag = drag
 		x.cost = originalcost
-
-
 	}
-
 }
 
 func (v *vertex) IsStillCritPath(x int,a []*vertex)bool{
 	v.cost = x
 	list := CalculateCritPath(a[0])
-	return contains(list, *v)
-}
-
-func contains(s []vertex, e vertex) bool {
-	for _, a := range s {
-		if a.name == e.name {
+	fmt.Println(len(a))
+	for _, a := range list {
+		fmt.Println(a.name+" - "+v.name)
+		if a.name == v.name {
 			return true
 		}
 	}
+
 	return false
 }
+
+
