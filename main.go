@@ -15,20 +15,18 @@ func main() {
 	f := CreateVertex([]*vertex{g}, 15, "F", 0, 0, 0,0)
 	b := CreateVertex([]*vertex{c}, 20, "B", 0, 0, 0,0)
 	a := CreateVertex([]*vertex{f,b,h}, 10, "A", 0, 0, 0,0)
-	graph := []*vertex{a,b,c,d,e,f,g,h}
-
 
 	CalculateEarliest(a, 1)
 	CalculateLatest(a)
-
-	fmt.Print("\n\n CRITICAL PATH: \n")
-	CalculateCritPath(a)
-	fmt.Print("\n")
-
-	Calculatefloats(graph)
-	CalculateDrag(graph)
-	for _,x := range graph{
+	fmt.Print("\nCRITICAL PATH: \n")
+	fmt.Println(StringCrit(a,""))
+	Fullgraph := []*vertex{a,b,c,d,e,f,g,h}
+	Calculatefloats(Fullgraph)
+	CalculateDrag(a,a)
+	for _,x := range Fullgraph{
 		x.PrintMe()
 	}
+
+
 
 }

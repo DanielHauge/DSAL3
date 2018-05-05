@@ -1,20 +1,21 @@
 package main
 
 import (
-	"fmt"
-	"strconv"
+	"strings"
 )
 
+var CritPath []*vertex
+var OriginalCritPath []*vertex
 func Calculatefloats(v []*vertex){
 	for _,x := range v{
 		x.gain = x.late-x.cost-x.early
 	}
 }
-
-func CalculateCritPath(v *vertex)[]*vertex{
-	results := []*vertex{}
+/*
+func CalculateCritPath(v *vertex){
 	if len(v.edges)==0{
 		fmt.Print(v.name+" END!\n")
+		CritPath = append(CritPath, v)
 	} else {
 		int := 0
 		for i,x := range v.edges{
@@ -22,13 +23,29 @@ func CalculateCritPath(v *vertex)[]*vertex{
 				fmt.Print(v.name)
 				fmt.Print(" - ")
 				int = i
-				results = append(results, v)
+				CritPath = append(CritPath, v)
+
+
 			}
 		}
 		CalculateCritPath(v.edges[int])
 	}
-	fmt.Println(strconv.Itoa(len(results)) + " Length")
-	return results
+}
+*/
+
+func StringCrit(v *vertex, res string)string{
+	res+=v.name
+	if len(v.edges)==0{
+		return res
+	} else {
+		crit_index := 0
+		for i,x := range v.edges{
+			if v.late == x.late-x.cost{
+				crit_index = i
+			}
+		}
+		return StringCrit(v.edges[crit_index], res)
+	}
 }
 
 
@@ -61,36 +78,53 @@ func (v *vertex) GetLatestForSingleVertex()int{
 	return result
 }
 
-func CalculateDrag(v []*vertex){
-	for _, x := range v{
-		originalcost := x.cost
+func CalculateDrag(todrag *vertex, start *vertex){
+	if len(todrag.edges)!=0{
+		int := 0
+		for i,x := range todrag.edges{
+			if todrag.late == x.late-x.cost{
+				int = i
+			}
+		}
+		//fmt.Print(todrag.name+"->")
+		CalculateDrag(todrag.edges[int],start)
+		//fmt.Println("->"+todrag.name)
 		drag := 0
-		fmt.Println("trying to find drag for: "+x.name+" Where its cost is: "+strconv.Itoa(originalcost))
-		for x.IsStillCritPath(originalcost-drag, v){
-			fmt.Println("Was still critical path: " + strconv.Itoa(drag))
-			drag ++;
-			if drag == originalcost {
+		Orig := todrag.cost
+		//fmt.Println("Setting orig: "+strconv.Itoa(Orig))
+		for IsStillCrit(todrag, start){
+			todrag.cost--
+			drag++
+			if todrag.cost==0{
 				break;
 			}
 		}
-		fmt.Println("Found Drag for "+x.name+" - Was: "+strconv.Itoa(drag))
-		x.drag = drag
-		x.cost = originalcost
+		todrag.drag = drag
+		todrag.cost = Orig
+	} else {
+		//fmt.Print(todrag.name)
+		//fmt.Println("\nSetting "+todrag.name+" To :"+strconv.Itoa(todrag.cost))
+		todrag.drag = todrag.cost
 	}
 }
 
-func (v *vertex) IsStillCritPath(x int,a []*vertex)bool{
-	v.cost = x
-	list := CalculateCritPath(a[0])
-	fmt.Println(len(a))
-	for _, a := range list {
-		fmt.Println(a.name+" - "+v.name)
-		if a.name == v.name {
-			return true
-		}
-	}
+func IsStillCrit(v *vertex, start *vertex)bool{
+	CalculateEarliest(start, 1)
+	CalculateLatest(start)
+	Crit := StringCrit(start, "")
+	bool := strings.Contains(Crit, v.name)
+	//if bool{fmt.Println(v.name+" Was still crit with cost: "+strconv.Itoa(v.cost)+" Path: "+Crit)} else {fmt.Println(v.name+" Was not crit with cost: "+strconv.Itoa(v.cost)+" Path: "+Crit)}
+	return bool
 
-	return false
 }
+
+
+
+
+
+
+
+
+
 
 

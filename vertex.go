@@ -26,7 +26,6 @@ type vertex struct {
 	drag int
 }
 
-
 func (v vertex) PrintMe(){
 	fmt.Print("\n")
 	fmt.Print(v.name)
@@ -42,4 +41,7 @@ func (v vertex) PrintMe(){
 	fmt.Print(v.late-1)
 	fmt.Print("\n Drag!   ")
 	fmt.Print(v.drag)
+	fmt.Print("\n Cost!   ")
+	fmt.Print(v.cost)
+
 }
